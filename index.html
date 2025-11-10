@@ -1,7 +1,197 @@
-<!DOCTYPE html>
-<!--force build-->
-<html>
-    <head>
-        <meta http-equiv="refresh" content="0; url=oxygen/Simulator The Biology of Oxygen HHMI BioInteractive.htm" />
-    </head>
-</html>
+<script type="text/javascript">
+    function toggleAccept(val) {
+        document.getElementById("AcceptForm").style.display = val ? "block" : "none";
+        toggleCard(!val);
+    }
+
+    function toggleCard(val)
+    {
+        document.getElementById("card").style.display = val ? "block" : "none";
+    }
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    window.onload = function() {
+
+        toggleAccept(false);
+
+        var form_id_js = "AcceptForm";
+        var data_js = {
+            "access_token": "v6rgstq7dlcv3e6d1t103ej2"
+        };
+        var sendButton = document.getElementById("submit_form");
+        function js_send() {
+            sendButton.value='Sending…';
+            sendButton.disabled=true;
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function() {
+                if (request.readyState == 4 && request.status == 200) {
+                    js_onSuccess();
+                } else
+                if(request.readyState == 4) {
+                    js_onError(request.response);
+                }
+            };
+
+            //var subject = document.querySelector("#" + form_id_js + " [name='subject']").value;
+            var accept = document.querySelector("#" + form_id_js + " [name='accept']").value;
+            var name = document.querySelector("#" + form_id_js + " [name='name']").value;
+            var email = document.querySelector("#" + form_id_js + " [name='email']").value;
+            var birb = document.querySelector("#" + form_id_js + " [name='favorite']").value;
+            var additionals = Array.from(document.querySelectorAll(".additional")).map(node => node.value);
+
+            var acceptStr = accept == 0 ? "Accept" : "Reject";
+            data_js['subject'] = `RSVP ${acceptStr} (${name})`;
+            data_js['text'] = 
+`RSVP ${acceptStr.toLowerCase()}ed for: ${name}
+Email: ${email}
+Additional Guest:
+${additionals.map(name => `- ${name}`) .join('\n')}
+
+Favorite Birb: ${birb}`;
+
+            console.log(data_js['subject']);
+            console.log(data_js['text']);
+            var params = toParams(data_js);
+
+            request.open("POST", "https://postmail.invotes.com/send", true);
+            request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+            request.send(params);
+
+            return false;
+        }
+
+        sendButton.onclick = js_send;
+
+        var js_form = document.getElementById(form_id_js);
+        js_form.addEventListener("submit", function (e) {
+            e.preventDefault();
+        });
+
+        var searchParams = new URLSearchParams(window.location.search);
+        var defaultName = searchParams.get('name');
+        var defaultEmail = searchParams.get('email');
+        var allowGuest = searchParams.get('type');
+
+        document.querySelector("#" + form_id_js + " [name='name']").value = defaultName;
+        document.querySelector("#" + form_id_js + " [name='email']").value = defaultEmail;
+        if (allowGuest == '1') {
+            document.querySelector("#addGuest").style.display = 'none';
+        }
+
+        unroll();
+
+    }
+
+    async function unroll() {
+        var scroll_top = document.getElementById("scroll-top");
+        var scroll_bottom = document.getElementById("scroll-bottom");
+        var sheet = document.getElementById("scroll");
+        for (let n = 45; n < 95; n+=0.5)
+        {
+            scroll_top.style.top = `${100 - n}%`;
+            if ( n < 84) {
+            scroll_bottom.style.top = `${n}%`;
+            }
+
+            var top = scroll_top.getBoundingClientRect();
+            var bottom = scroll_bottom.getBoundingClientRect();
+            sheet.style.height = `${(bottom.top + bottom.height) - top.top - 90}`;
+            await sleep(1);
+        }
+    }
+
+    function js_onSuccess() {
+        // remove this to avoid redirect
+       //window.location = window.location.pathname + "?message=Email+Successfully+Sent%21&isError=0";
+    }
+
+    function js_onError(error) {
+        // remove this to avoid redirect
+        //window.location = window.location.pathname + "?message=Email+could+not+be+sent.&isError=1";
+    }
+
+
+
+    function toParams(data_js) {
+        var form_data = [];
+        for ( var key in data_js ) {
+            form_data.push(encodeURIComponent(key) + "=" + encodeURIComponent(data_js[key]));
+        }
+
+        return form_data.join("&");
+    }
+
+    function addGuest() {
+        var group = document.createElement("div");
+        group.className = "form_field";
+        var label = document.createElement("label");
+        label.textContent = "Additional Guest:";
+        var input = document.createElement("input");
+        input.type = "text";
+        input.className = "additional";
+        group.appendChild(label);
+        group.appendChild(input);
+        document.getElementById("form_fields").insertBefore(group,document.getElementById("addGuest"));
+    }
+
+
+</script>
+<link rel = "stylesheet" href = "index.css"/>
+<body>
+    <div class ="background" style="background-color: tan;"></div>
+    <div id = "scroll-anim" class = "center absolute">
+        
+        
+        <div class = "center relative scroll" id = "scroll">
+            <img id = "scroll-sheet" src = "scroll_middle.png"/>
+            <img id = "card" src="Invite.png"/>
+        </div>
+        <img class = "center relative scroll" id = "scroll-top" src = "scroll_top.png">
+        <div class = "center relative scroll" id = "scroll-bottom" >
+            <img class = "absolute" src = "scroll_top.png" style="transform: translate(0%, -50%) scale(-1, -1);"/>
+            <div class = "center absolute">
+                <button id="RSVP" class = "center absolute" onclick="toggleAccept(true)">
+                    RSVP
+                </button>
+            </div>
+        </div>
+    </div>
+    <form class = "center absolute" id="AcceptForm" action="https://postmail.invotes.com/send"
+method="post" id="email_form">
+        <div class = "background"></div>
+        <div id = "form_fields" class="relative-center fields">
+            <div class = "form_field">
+                <label for="accept">Select:</label>
+                <select id = "accept" name = "accept">
+                    <option value="0">Accept</option>
+                    <option value="1">Decline</option>
+                </select>
+            </div>
+            <div class="form_field">
+                <label for="name">Name:</label>
+                <input type = "text" name = "name" id="name" required />
+            </div>
+
+            <div class="form_field">
+                <label for="email">Email:</label>
+                <input type = "text" name = "email" id="email" required />
+            </div>
+
+            <div class="form_field">
+                <label for="favorite">Favorite Bird:</label>
+                <input type = "text" name = "favorite" id="favorite" required />
+            </div>
+
+
+            <div id="addGuest" class = ><p></p>
+            <button onclick="window.addGuest()" type="button">Add Guest</button>
+            </div>
+
+            <div><p></p></div>
+            <input id="submit_form" type="submit" value="Send" />
+        </div>
+    </form>
+
+</body>
