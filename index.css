@@ -67,7 +67,8 @@ input {
     position: absolute;
     height: 5%;
     width: 75%;
-    top: 51%
+    top: 51%;
+    transform: translate(-50%, 0);
 }
 
 #card

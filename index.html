@@ -97,7 +97,8 @@ Favorite Birb: ${birb}`;
 
             var top = scroll_top.getBoundingClientRect();
             var bottom = scroll_bottom.getBoundingClientRect();
-            sheet.style.height = `${(bottom.top + bottom.height) - top.top - 90}`;
+            sheet.style.top = top.top + top.height - 30;
+            sheet.style.height = `${(bottom.top + bottom.height) - top.top - 60}`;
             await sleep(1);
         }
     }
