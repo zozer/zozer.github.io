@@ -41,7 +41,9 @@ form {
     border-radius: 50%;
     background: gray;
 }
-
+.form_field {
+    width: 100%
+}
 input {
     width: 500
 }
