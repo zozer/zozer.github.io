@@ -1,12 +1,37 @@
 <script type="text/javascript">
+    function RSVP()
+    {
+        toggleAccept(true);
+        toggleCard(false);
+        toggleRSVP(false);
+    }
+    function toggleEl(val, id)
+    {
+        document.getElementById(id).style.display = val ? "block" : "none";
+    }
     function toggleAccept(val) {
-        document.getElementById("AcceptForm").style.display = val ? "block" : "none";
-        toggleCard(!val);
+        toggleEl(val, "AcceptForm");
     }
 
     function toggleCard(val)
     {
-        document.getElementById("card").style.display = val ? "block" : "none";
+        toggleEl(val, "card");
+    }
+
+    function toggleRSVP(val)
+    {
+        toggleEl(val, "RSVP");
+
+    }
+
+    function toggleThank(val)
+    {
+        toggleEl(val, "thank");
+    }
+
+    function toggleError(val)
+    {
+        toggleEl(val, "error");
     }
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -16,6 +41,9 @@
 
         toggleAccept(false);
         toggleCard(false);
+        toggleRSVP(false);
+        toggleThank(false);
+        toggleError(false);
 
         var form_id_js = "AcceptForm";
         var data_js = {
@@ -78,9 +106,7 @@ Favorite Birb: ${birb}`;
 
         document.querySelector("#" + form_id_js + " [name='name']").value = defaultName;
         document.querySelector("#" + form_id_js + " [name='email']").value = defaultEmail;
-        if (allowGuest == '1') {
-            document.querySelector("#addGuest").style.display = 'none';
-        }
+        document.querySelector("#addGuest").style.display = allowGuest == '0' ? 'block' : 'none';
     }
     async function unroll() {
         if (unrolled) {
@@ -105,16 +131,17 @@ Favorite Birb: ${birb}`;
             sheet.style.height = `${(bottom.top + bottom.height) - top.top - 60}`;
             await sleep(1);
         }
+        toggleRSVP(true);
     }
 
     function js_onSuccess() {
-        // remove this to avoid redirect
-       //window.location = window.location.pathname + "?message=Email+Successfully+Sent%21&isError=0";
+       toggleThank(true);
+       toggleAccept(false);
     }
 
     function js_onError(error) {
-        // remove this to avoid redirect
-        //window.location = window.location.pathname + "?message=Email+could+not+be+sent.&isError=1";
+        toggleError(true);
+        toggleAccept(false);
     }
 
 
@@ -177,25 +204,30 @@ Favorite Birb: ${birb}`;
                     </div>
 
 
-                    <div id="addGuest" class = ><p></p>
-                    <button onclick="window.addGuest()" type="button">Add Guest</button>
+                    <div id="addGuest" title="Add additional family members you are RSVPing for"><p></p>
+                    <button onclick="window.addGuest()" type="button">Add Family Member</button>
                     </div>
 
                     <div><p></p></div>
                     <input id="submit_form" type="submit" value="Send" />
                 </div>
             </form>
+            <div id="thank" class="absolute center">
+                <h1>Thank you!</h1>
+            </div>
+
+            <div id="error" class="absolute center">
+                <h1>Uh oh something went wrong!</h1>
+            </div>
         </div>
         <img class = "center relative scroll" id = "scroll-top" src = "scroll_top.png">
         <div class = "center relative scroll" id = "scroll-bottom" >
             <img class = "absolute" src = "scroll_top.png" style="transform: translate(0%, -50%) scale(-1, -1);"/>
             <div class = "center absolute">
-                <button id="RSVP" class = "center absolute" onclick="toggleAccept(true)">
+                <button id="RSVP" class = "center absolute" style="background-color: tan;" onclick="RSVP()">
                     RSVP
                 </button>
             </div>
         </div>
     </div>
-
-
 </body>
