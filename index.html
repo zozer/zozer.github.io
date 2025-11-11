@@ -11,9 +11,11 @@
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
+    var unrolled = false;
     window.onload = function() {
 
         toggleAccept(false);
+        toggleCard(false);
 
         var form_id_js = "AcceptForm";
         var data_js = {
@@ -79,12 +81,14 @@ Favorite Birb: ${birb}`;
         if (allowGuest == '1') {
             document.querySelector("#addGuest").style.display = 'none';
         }
-
-        unroll();
-
     }
-
     async function unroll() {
+        if (unrolled) {
+            return;
+        } else {
+            unrolled = true;
+            toggleCard(true);
+        }
         var scroll_top = document.getElementById("scroll-top");
         var scroll_bottom = document.getElementById("scroll-bottom");
         var sheet = document.getElementById("scroll");
@@ -142,12 +146,45 @@ Favorite Birb: ${birb}`;
 <link rel = "stylesheet" href = "index.css"/>
 <body>
     <div class ="background" style="background-color: tan;"></div>
-    <div id = "scroll-anim" class = "center absolute">
-        
-        
+    <div id = "scroll-anim" class = "center absolute" onclick="unroll()">
         <div class = "center relative scroll" id = "scroll">
             <img id = "scroll-sheet" src = "scroll_middle.png"/>
             <img id = "card" src="Invite.png"/>
+            <form class = "" id="AcceptForm" action="https://postmail.invotes.com/send"
+        method="post" id="email_form">
+                <div class = "background"></div>
+                <div id = "form_fields" class="relative center fields" style="top:0%">
+                    <div class = "form_field">
+                        <label for="accept">Select:</label>
+                        <select id = "accept" name = "accept">
+                            <option value="0">Accept</option>
+                            <option value="1">Decline</option>
+                        </select>
+                    </div>
+                    <div class="form_field">
+                        <label for="name">Name:</label>
+                        <input type = "text" name = "name" id="name" required />
+                    </div>
+
+                    <div class="form_field">
+                        <label for="email">Email:</label>
+                        <input type = "text" name = "email" id="email" required />
+                    </div>
+
+                    <div class="form_field">
+                        <label for="favorite">Favorite Bird:</label>
+                        <input type = "text" name = "favorite" id="favorite" />
+                    </div>
+
+
+                    <div id="addGuest" class = ><p></p>
+                    <button onclick="window.addGuest()" type="button">Add Guest</button>
+                    </div>
+
+                    <div><p></p></div>
+                    <input id="submit_form" type="submit" value="Send" />
+                </div>
+            </form>
         </div>
         <img class = "center relative scroll" id = "scroll-top" src = "scroll_top.png">
         <div class = "center relative scroll" id = "scroll-bottom" >
@@ -159,40 +196,6 @@ Favorite Birb: ${birb}`;
             </div>
         </div>
     </div>
-    <form class = "center absolute" id="AcceptForm" action="https://postmail.invotes.com/send"
-method="post" id="email_form">
-        <div class = "background"></div>
-        <div id = "form_fields" class="relative-center fields">
-            <div class = "form_field">
-                <label for="accept">Select:</label>
-                <select id = "accept" name = "accept">
-                    <option value="0">Accept</option>
-                    <option value="1">Decline</option>
-                </select>
-            </div>
-            <div class="form_field">
-                <label for="name">Name:</label>
-                <input type = "text" name = "name" id="name" required />
-            </div>
 
-            <div class="form_field">
-                <label for="email">Email:</label>
-                <input type = "text" name = "email" id="email" required />
-            </div>
-
-            <div class="form_field">
-                <label for="favorite">Favorite Bird:</label>
-                <input type = "text" name = "favorite" id="favorite" required />
-            </div>
-
-
-            <div id="addGuest" class = ><p></p>
-            <button onclick="window.addGuest()" type="button">Add Guest</button>
-            </div>
-
-            <div><p></p></div>
-            <input id="submit_form" type="submit" value="Send" />
-        </div>
-    </form>
 
 </body>

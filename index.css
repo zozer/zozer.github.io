@@ -77,7 +77,7 @@ input {
     height: 90%;
     left: 0%;
     width: 95%;
-    transform: translate(2.5%, 0%);
+    transform: translate(2.5%, 2.5%);
 }
 
 #scroll-sheet
